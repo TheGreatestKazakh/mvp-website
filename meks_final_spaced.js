@@ -280,13 +280,16 @@ function nl2br(v){
 }
 function buildStatChips(stats, scope){
  const defs = [
-   ['process','На исполнении'],
-   ['overdue','Тянутся давно'],
-   ['notdone','Не исполнено']
+   ['process','В работе','Показать задачи, которые сейчас исполняются'],
+   ['overdue','Требуют внимания','Открыть задачи, которые тянутся дольше обычного'],
+   ['notdone','Не исполнено','Посмотреть задачи без исполнения']
  ];
- return defs.map(([key,label]) =>
+ return defs.map(([key,title,hint]) =>
    `<button type="button" class="stat-chip ${key}" onclick="openStatusModal('${key}','${scope}')">
-      <span>${label}</span>
+      <span class="stat-chip-copy">
+        <span class="stat-chip-title">${title}</span>
+        <span class="stat-chip-hint">${hint}</span>
+      </span>
       <span class="num">${stats[key] || 0}</span>
     </button>`
  ).join('');

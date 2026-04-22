@@ -11,8 +11,22 @@
 <body>
 <div class="page">
 
-
-<div id="globalStatsBar" class="stats-bar global-stats-bar" aria-label="Общий счетчик задач"></div>
+<section class="overview-panel" aria-label="Обзор карты задач">
+  <div class="overview-head">
+    <div class="overview-title-block">
+      <div class="overview-title">Сводка по задачам</div>
+      <div class="overview-subtitle">Цвета показывают статус, а фильтры ниже помогают быстро открыть проблемные и активные задачи.</div>
+    </div>
+    <div class="legend" aria-label="Легенда статусов">
+      <span><span class="dot" style="background:#059669;"></span>Исполнено</span>
+      <span><span class="dot" style="background:#D97706;"></span>С нарушением</span>
+      <span><span class="dot" style="background:#2563EB;"></span>На исполнении</span>
+      <span><span class="dot" style="background:#DC2626;"></span>Не исполнено</span>
+      <span><span class="dot" style="border:1px solid #aaa;"></span>Не упомянуто</span>
+    </div>
+  </div>
+  <div id="globalStatsBar" class="stats-bar global-stats-bar" aria-label="Общий счетчик задач"></div>
+</section>
 
 <div class="mm-shell">
 <div class="stage-hint">На телефоне схему удобнее листать влево-вправо. Нажмите на задачу, чтобы открыть подробности на весь экран.</div>
@@ -57,14 +71,6 @@
 </div>
 
 
-</div>
-
-<div class="legend">
-<span style="display:flex;align-items:center;gap:4px;"><span class="dot" style="background:#059669;"></span>Исполнено</span>
-<span style="display:flex;align-items:center;gap:4px;"><span class="dot" style="background:#D97706;"></span>С нарушением</span>
-<span style="display:flex;align-items:center;gap:4px;"><span class="dot" style="background:#2563EB;"></span>На исполнении</span>
-<span style="display:flex;align-items:center;gap:4px;"><span class="dot" style="background:#DC2626;"></span>Не исполнено</span>
-<span style="display:flex;align-items:center;gap:4px;"><span class="dot" style="border:1px solid #aaa;"></span>Не упомянуто</span>
 </div>
 
 <script src="meks_final_spaced.js"></script>
