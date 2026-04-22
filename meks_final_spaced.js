@@ -11,8 +11,10 @@ const CATS=[{"id":"plt","name":"Платформа МЭКС","col":"#2563EB","ta
 
 // Layout
 const TH=42,CG=14,SY=42;
-const XC=0,WC=0,XCT=10,WCT=110,XT=126,WT=132;
-const DX=[277,301,325,349,373],DR=10;
+const LEFT_XCT=10,LEFT_WCT=108,LEFT_XT=128,LEFT_WT=122;
+const RIGHT_START=46,RIGHT_COL_STEP=76,RIGHT_DR=13;
+const LEFT_VIEW_W=260,RIGHT_VIEW_W=RIGHT_START * 2 + RIGHT_COL_STEP * (PO.length - 1);
+const DX=PO.map((_,i)=>RIGHT_START + RIGHT_COL_STEP * i);
 let allT=[],allC=[],y=SY;
 for(const cat of CATS){
  const sy=y,ct=[];
@@ -36,55 +38,61 @@ function el(tag,a,txt){
  return e;
 }
 
-const svg=document.getElementById('mm');
-svg.setAttribute('viewBox',`0 0 392 ${TOT}`);
-svg.style.height = TOT + 'px';
+const leftSvg=document.getElementById('mmLeft');
+const rightSvg=document.getElementById('mmRight');
 
-// defs
-const defs=el('defs',{});
-const mk=el('marker',{id:'ah',viewBox:'0 0 10 10',refX:'8',refY:'5',markerWidth:'5',markerHeight:'5',orient:'auto-start-reverse'});
-mk.appendChild(el('path',{d:'M2 1L8 5L2 9',fill:'none',stroke:'context-stroke','stroke-width':'1.5','stroke-linecap':'round','stroke-linejoin':'round'}));
-defs.appendChild(mk);
-svg.appendChild(defs);
+leftSvg.setAttribute('viewBox',`0 0 ${LEFT_VIEW_W} ${TOT}`);
+leftSvg.style.height = TOT + 'px';
+rightSvg.setAttribute('viewBox',`0 0 ${RIGHT_VIEW_W} ${TOT}`);
+rightSvg.style.height = TOT + 'px';
 
-// Column guides + headers
+function appendSharedDefs(svg){
+ const defs=el('defs',{});
+ const mk=el('marker',{id:'ah',viewBox:'0 0 10 10',refX:'8',refY:'5',markerWidth:'5',markerHeight:'5',orient:'auto-start-reverse'});
+ mk.appendChild(el('path',{d:'M2 1L8 5L2 9',fill:'none',stroke:'context-stroke','stroke-width':'1.5','stroke-linecap':'round','stroke-linejoin':'round'}));
+ defs.appendChild(mk);
+ svg.appendChild(defs);
+}
+
+appendSharedDefs(leftSvg);
+appendSharedDefs(rightSvg);
+
 PO.forEach((p,i)=>{
  const cx=DX[i];
- svg.appendChild(el('line',{x1:cx,y1:34,x2:cx,y2:TOT-5,stroke:'var(--color-border-tertiary)','stroke-width':'0.5'}));
- svg.appendChild(el('text',{x:cx,y:15,'text-anchor':'middle','font-family':'var(--font-sans)','font-size':'8.5','font-weight':'600',fill:'var(--color-text-secondary)'},p));
- svg.appendChild(el('text',{x:cx,y:29,'text-anchor':'middle','font-family':'var(--font-sans)','font-size':'7.2',fill:'var(--color-text-secondary)',opacity:'0.85'},PD[i]));
+ rightSvg.appendChild(el('line',{x1:cx,y1:38,x2:cx,y2:TOT-5,stroke:'var(--color-border-strong)','stroke-width':'0.75'}));
+ rightSvg.appendChild(el('text',{x:cx,y:16,'text-anchor':'middle','font-family':'var(--font-sans)','font-size':'11.5','font-weight':'700',fill:'var(--color-text-primary)'},p));
+ rightSvg.appendChild(el('text',{x:cx,y:31,'text-anchor':'middle','font-family':'var(--font-sans)','font-size':'9.2',fill:'var(--color-text-secondary)',opacity:'0.95'},PD[i]));
 });
 
-// Categories & tasks
 for(const cat of allC){
- const ccatx=XCT+WCT/2;
- // cat bg
- svg.appendChild(el('rect',{x:XCT,y:cat.sy+1,width:WCT,height:cat.ey-cat.sy-2,rx:'5',fill:cat.col,'fill-opacity':'0.07',stroke:cat.col,'stroke-width':'0.5','stroke-opacity':'0.45'}));
- svg.appendChild(el('text',{x:ccatx,y:cat.cy+4,'text-anchor':'middle','font-family':'var(--font-sans)','font-size':'9','font-weight':'500',fill:cat.col},cat.name));
+ const ccatx=LEFT_XCT + LEFT_WCT / 2;
+ leftSvg.appendChild(el('rect',{x:LEFT_XCT,y:cat.sy+1,width:LEFT_WCT,height:cat.ey-cat.sy-2,rx:'8',fill:cat.col,'fill-opacity':'0.08',stroke:cat.col,'stroke-width':'0.75','stroke-opacity':'0.45'}));
+ leftSvg.appendChild(el('text',{x:ccatx,y:cat.cy+4,'text-anchor':'middle','font-family':'var(--font-sans)','font-size':'9.5','font-weight':'600',fill:cat.col},cat.name));
 
  for(const t of cat.tasks){
-  // cat → task line
-  svg.appendChild(el('line',{x1:XCT+WCT,y1:cat.cy,x2:XT,y2:t.y,stroke:cat.col,'stroke-width':'0.7',opacity:'0.3'}));
-  // task group
-  const g=el('g',{class:'mm-task',onclick:`sel('${t.id}')`});
-  const rect=el('rect',{class:'tbox',id:`tr_${t.id}`,x:XT,y:t.y-TH/2+2,width:WT,height:TH-4,rx:'4',fill:'#FFFFFF',stroke:cat.col,'stroke-width':'0.8','stroke-opacity':'0.65'});
-  g.appendChild(rect);
-  // task name — truncate at 22 chars
-  const nm=t.name.length>22?t.name.slice(0,21)+'…':t.name;
-  g.appendChild(el('text',{x:XT+8,y:t.y+4,'font-family':'var(--font-sans)','font-size':'10',fill:'#111827','dominant-baseline':'middle'},nm));
-  // dots
+  leftSvg.appendChild(el('line',{x1:LEFT_XCT+LEFT_WCT,y1:cat.cy,x2:LEFT_XT,y2:t.y,stroke:cat.col,'stroke-width':'0.9',opacity:'0.28'}));
+
+  const leftGroup=el('g',{class:'mm-task',onclick:`sel('${t.id}')`});
+  const leftRect=el('rect',{class:'tbox',id:`tr_${t.id}`,x:LEFT_XT,y:t.y-TH/2+2,width:LEFT_WT,height:TH-4,rx:'6',fill:'#FFFFFF',stroke:cat.col,'stroke-width':'0.8','stroke-opacity':'0.65'});
+  leftGroup.appendChild(leftRect);
+  const nm=t.name.length>24?t.name.slice(0,23)+'…':t.name;
+  leftGroup.appendChild(el('text',{x:LEFT_XT+8,y:t.y+4,'font-family':'var(--font-sans)','font-size':'10.5',fill:'#111827','dominant-baseline':'middle'},nm));
+  leftSvg.appendChild(leftGroup);
+
+  const rightGroup=el('g',{class:'mm-task',onclick:`sel('${t.id}')`});
+  rightGroup.appendChild(el('rect',{id:`rr_${t.id}`,x:12,y:t.y-TH/2+2,width:RIGHT_VIEW_W-24,height:TH-4,rx:'8',fill:'transparent',stroke:'transparent','stroke-width':'1'}));
   PO.forEach((p,i)=>{
    const pd=t.po[p];
    const cx=DX[i];
    if(pd){
     const s=SC[pd.s]||SC['НА ИСПОЛНЕНИИ'];
-    g.appendChild(el('circle',{cx,cy:t.y,r:DR,fill:s.c,'fill-opacity':'0.18',stroke:s.c,'stroke-width':'1.5'}));
-    g.appendChild(el('text',{x:cx,y:t.y+4,'text-anchor':'middle','font-family':'var(--font-sans)','font-size':'9','font-weight':'700',fill:s.c,'dominant-baseline':'middle'},s.m));
+    rightGroup.appendChild(el('circle',{cx,cy:t.y,r:RIGHT_DR,fill:s.c,'fill-opacity':'0.18',stroke:s.c,'stroke-width':'1.8'}));
+    rightGroup.appendChild(el('text',{x:cx,y:t.y+4,'text-anchor':'middle','font-family':'var(--font-sans)','font-size':'10','font-weight':'700',fill:s.c,'dominant-baseline':'middle'},s.m));
    }else{
-    g.appendChild(el('circle',{cx,cy:t.y,r:DR,fill:'none',stroke:'var(--color-border-tertiary)','stroke-width':'0.5'}));
+    rightGroup.appendChild(el('circle',{cx,cy:t.y,r:RIGHT_DR,fill:'none',stroke:'var(--color-border-strong)','stroke-width':'0.9'}));
    }
   });
-  svg.appendChild(g);
+  rightSvg.appendChild(rightGroup);
  }
 }
 
@@ -152,10 +160,14 @@ function sel(id){
  if(curId){
   const old=document.getElementById('tr_'+curId);
   if(old){old.setAttribute('fill','#FFFFFF');old.setAttribute('stroke-width','0.8');}
+  const oldRow=document.getElementById('rr_'+curId);
+  if(oldRow){oldRow.setAttribute('fill','transparent');oldRow.setAttribute('stroke','transparent');}
  }
  curId=id;
  const r=document.getElementById('tr_'+id);
  if(r){r.setAttribute('fill','#EFF6FF');r.setAttribute('stroke-width','1.8');}
+ const rr=document.getElementById('rr_'+id);
+ if(rr){rr.setAttribute('fill','#EFF6FF');rr.setAttribute('stroke','#BFDBFE');}
  // find task
  let task=null;
  for(const c of CATS){for(const t of c.tasks){if(t.id===id){task={...t,catName:c.name,catCol:c.col};break;}}if(task)break;}
@@ -203,6 +215,7 @@ function closeD(){
  document.getElementById('modalOverlay').classList.remove('is-open');
  document.body.classList.remove('modal-open');
  if(curId){const r=document.getElementById('tr_'+curId);if(r){r.setAttribute('fill','#FFFFFF');r.setAttribute('stroke-width','0.8');}}
+ if(curId){const rr=document.getElementById('rr_'+curId);if(rr){rr.setAttribute('fill','transparent');rr.setAttribute('stroke','transparent');}}
  curId=null;
 }
 
@@ -382,5 +395,3 @@ function setStatusScale(scale){
  setStatusScale(Number.isFinite(value) ? value : 1);
 })();
 renderGlobalStats();
-
-
