@@ -12,7 +12,7 @@ const CATS=[{"id":"plt","name":"Платформа МЭКС","col":"#2563EB","ta
 // Layout
 const TH=42,CG=14,SY=42;
 const LEFT_XCT=10,LEFT_WCT=108,LEFT_XT=128,LEFT_WT=122;
-const RIGHT_START=46,RIGHT_COL_STEP=76,RIGHT_DR=13;
+const RIGHT_START=40,RIGHT_COL_STEP=68,RIGHT_DR=12;
 const LEFT_VIEW_W=260,RIGHT_VIEW_W=RIGHT_START * 2 + RIGHT_COL_STEP * (PO.length - 1);
 const DX=PO.map((_,i)=>RIGHT_START + RIGHT_COL_STEP * i);
 let allT=[],allC=[],y=SY;
@@ -68,8 +68,9 @@ for(const cat of allC){
  const ccatx=LEFT_XCT + LEFT_WCT / 2;
  leftSvg.appendChild(el('rect',{x:LEFT_XCT,y:cat.sy+1,width:LEFT_WCT,height:cat.ey-cat.sy-2,rx:'8',fill:cat.col,'fill-opacity':'0.08',stroke:cat.col,'stroke-width':'0.75','stroke-opacity':'0.45'}));
  leftSvg.appendChild(el('text',{x:ccatx,y:cat.cy+4,'text-anchor':'middle','font-family':'var(--font-sans)','font-size':'9.5','font-weight':'600',fill:cat.col},cat.name));
+ rightSvg.appendChild(el('rect',{x:12,y:cat.sy+1,width:RIGHT_VIEW_W-24,height:cat.ey-cat.sy-2,rx:'10',fill:cat.col,'fill-opacity':'0.035',stroke:cat.col,'stroke-width':'0.5','stroke-opacity':'0.12'}));
 
- for(const t of cat.tasks){
+ for(const [taskIndex,t] of cat.tasks.entries()){
   leftSvg.appendChild(el('line',{x1:LEFT_XCT+LEFT_WCT,y1:cat.cy,x2:LEFT_XT,y2:t.y,stroke:cat.col,'stroke-width':'0.9',opacity:'0.28'}));
 
   const leftGroup=el('g',{class:'mm-task',onclick:`sel('${t.id}')`});
@@ -80,7 +81,9 @@ for(const cat of allC){
   leftSvg.appendChild(leftGroup);
 
   const rightGroup=el('g',{class:'mm-task',onclick:`sel('${t.id}')`});
-  rightGroup.appendChild(el('rect',{id:`rr_${t.id}`,x:12,y:t.y-TH/2+2,width:RIGHT_VIEW_W-24,height:TH-4,rx:'8',fill:'transparent',stroke:'transparent','stroke-width':'1'}));
+  const rowFill = taskIndex % 2 === 0 ? 'rgba(248,250,252,0.9)' : 'rgba(255,255,255,0.92)';
+  rightGroup.appendChild(el('rect',{id:`rr_${t.id}`,x:12,y:t.y-TH/2+2,width:RIGHT_VIEW_W-24,height:TH-4,rx:'8',fill:rowFill,stroke:'transparent','stroke-width':'1','data-default-fill':rowFill}));
+  rightGroup.appendChild(el('line',{x1:12,y1:t.y+TH/2-2,x2:RIGHT_VIEW_W-12,y2:t.y+TH/2-2,stroke:'rgba(148,163,184,0.22)','stroke-width':'1'}));
   PO.forEach((p,i)=>{
    const pd=t.po[p];
    const cx=DX[i];
@@ -161,13 +164,13 @@ function sel(id){
   const old=document.getElementById('tr_'+curId);
   if(old){old.setAttribute('fill','#FFFFFF');old.setAttribute('stroke-width','0.8');}
   const oldRow=document.getElementById('rr_'+curId);
-  if(oldRow){oldRow.setAttribute('fill','transparent');oldRow.setAttribute('stroke','transparent');}
+  if(oldRow){oldRow.setAttribute('fill',oldRow.getAttribute('data-default-fill') || 'transparent');oldRow.setAttribute('stroke','transparent');}
  }
  curId=id;
  const r=document.getElementById('tr_'+id);
  if(r){r.setAttribute('fill','#EFF6FF');r.setAttribute('stroke-width','1.8');}
  const rr=document.getElementById('rr_'+id);
- if(rr){rr.setAttribute('fill','#EFF6FF');rr.setAttribute('stroke','#BFDBFE');}
+ if(rr){rr.setAttribute('fill','#DBEAFE');rr.setAttribute('stroke','#93C5FD');}
  // find task
  let task=null;
  for(const c of CATS){for(const t of c.tasks){if(t.id===id){task={...t,catName:c.name,catCol:c.col};break;}}if(task)break;}
@@ -215,7 +218,7 @@ function closeD(){
  document.getElementById('modalOverlay').classList.remove('is-open');
  document.body.classList.remove('modal-open');
  if(curId){const r=document.getElementById('tr_'+curId);if(r){r.setAttribute('fill','#FFFFFF');r.setAttribute('stroke-width','0.8');}}
- if(curId){const rr=document.getElementById('rr_'+curId);if(rr){rr.setAttribute('fill','transparent');rr.setAttribute('stroke','transparent');}}
+ if(curId){const rr=document.getElementById('rr_'+curId);if(rr){rr.setAttribute('fill',rr.getAttribute('data-default-fill') || 'transparent');rr.setAttribute('stroke','transparent');}}
  curId=null;
 }
 

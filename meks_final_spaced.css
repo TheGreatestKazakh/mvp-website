@@ -59,6 +59,7 @@ body {
 }
 
 .stage-hint {
+  width: 100%;
   font-size: 12px;
   line-height: 1.45;
   color: var(--color-text-secondary);
@@ -105,8 +106,8 @@ body {
 }
 
 #mmRight {
-  width: max(100%, 440px) !important;
-  min-width: 440px !important;
+  width: max(100%, 360px) !important;
+  min-width: 360px !important;
 }
 
 .mm-task {
@@ -510,8 +511,8 @@ body.modal-open {
   }
 
   #mmRight {
-    width: 440px !important;
-    min-width: 440px !important;
+    width: 360px !important;
+    min-width: 360px !important;
   }
 
   .legend {
@@ -578,8 +579,8 @@ body.modal-open {
   }
 
   #mmRight {
-    width: 400px !important;
-    min-width: 400px !important;
+    width: 340px !important;
+    min-width: 340px !important;
   }
 
   #dtop {
